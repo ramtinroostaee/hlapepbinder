@@ -5,10 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ebc90b4d-0b06-4df0-a0dc-bce552bf3c4c" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/Components/HlapForm.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.github/workflows/nextjs.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/nextjs.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/page.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/page.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/next.config.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/next.config.mjs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,7 +66,7 @@
       <workItem from="1706599184595" duration="278000" />
       <workItem from="1706600175408" duration="10556000" />
       <workItem from="1706615119831" duration="544000" />
-      <workItem from="1706615724427" duration="353000" />
+      <workItem from="1706615724427" duration="993000" />
     </task>
     <servers />
   </component>
