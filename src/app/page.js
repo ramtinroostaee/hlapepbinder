@@ -1,5 +1,5 @@
-import { Button, FormControl, TextField } from "@mui/material";
 import axios from "axios";
+import HlapForm from "@/Components/HlapForm";
 
 axios.defaults.headers.common["Content-Type"] = 'application/json';
 axios.defaults.headers.common["Accept"] = "application/json";
@@ -49,15 +49,7 @@ export default function Home() {
 
   return (
       <main className="flex min-h-screen flex-col items-center justify-between p-24">
-        <form action={submit}>
-          <p>Enter protein sequence(s) in FASTA format
-            or as whitespace-separated sequences.
-          </p>
-          <FormControl fullWidth>
-            <TextField className={"my-10"} name="sequence" variant="outlined"/>
-          </FormControl>
-          <Button type={"submit"} variant="outlined">Submit</Button>
-        </form>
+        <HlapForm submit={submit} />
       </main>
   )
 }
