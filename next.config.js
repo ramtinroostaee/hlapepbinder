@@ -7,7 +7,6 @@ const nextConfig = {
     },
     assetPrefix: '/hlapepbinder',
     basePath: "/hlapepbinder",
-    output: "export",
 };
 
 module.exports = nextConfig
