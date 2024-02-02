@@ -8,10 +8,6 @@ axios.defaults.headers.withCredentials = true;
 
 export const allPredictors = ["ann", "consensus", "netmhcpan_ba", "netmhcpan_el", "smm", "smmpmbec", "pickpocket", "netmhccons", "netmhcstabpan"];
 
-export function timeout(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 async function submit(formData) {
   "use server"
 
@@ -26,9 +22,9 @@ async function submit(formData) {
       "stage_number": 1,
       "stage_type": "prediction",
       "tool_group": "mhci",
-      "input_sequence_text": formData.get("input_sequence_text"),
+      "input_sequence_text": formData.input_sequence_text,
       "input_parameters": {
-        "alleles": "HLA-A*01:01",
+        "alleles": formData.Alleles,
         "peptide_length_range": null,
       },
       "table_state": { "columns": {} }
@@ -60,7 +56,7 @@ const getResult = async (urlArray) => {
   const results = urlArray.map((result) =>
     typeof result === "string" ? axios({
       url: result,
-    }).then((res) => res.data) : null
+    }).then((res) => res.data) : result
   );
 
   return await Promise.all(results);
@@ -69,7 +65,7 @@ const getResult = async (urlArray) => {
 export default function Home() {
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+    <main className="flex min-h-screen flex-col items-center  p-24">
       <HlapForm submit={submit} getResult={getResult}/>
     </main>
   )
