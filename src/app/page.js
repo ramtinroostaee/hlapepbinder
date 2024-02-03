@@ -3,7 +3,9 @@ import HlapForm from "@/Components/HlapForm";
 
 axios.defaults.headers.common["Content-Type"] = 'application/json';
 axios.defaults.headers.common["Accept"] = "application/json";
-axios.defaults.headers.withCredentials = true;
+axios.defaults.headers.withCredentials = false;
+axios.defaults.headers["Access-Control-Allow-Credentials"] = true;
+axios.defaults.headers["Access-Control-Allow-Origin"] = "*";
 // axios.defaults.baseURL = "https://api-nextgen-tools.iedb.org/";
 
 export const allPredictors = ["ann", "consensus", "netmhcpan_ba", "netmhcpan_el", "smm", "smmpmbec", "pickpocket", "netmhccons", "netmhcstabpan"];

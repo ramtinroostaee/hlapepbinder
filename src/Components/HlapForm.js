@@ -3,16 +3,11 @@
 import {
     Button, CircularProgress,
     FormControl, InputAdornment,
-    Paper,
-    Table, TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
     TextField
 } from "@mui/material";
 import {useCallback, useState} from "react";
 import {formSample, sample} from "@/Components/testing";
+import Tables from "@/Components/Tables";
 
 const sourceSpecies = [
     {text: "chimpanzee", value: "chimpanzee"},
@@ -33,8 +28,8 @@ export function timeout(ms) {
 const inputs = ["input_sequence_text", "Alleles"];
 
 const Form = ({submit, getResult}) => {
-    const [submitResults, setSubmitResults] = useState(sample);
-    const [formData, setFormData] = useState(formSample);
+    const [submitResults, setSubmitResults] = useState([]);
+    const [formData, setFormData] = useState({});
     const [loading, setLoading] = useState(false);
 
     const action = useCallback(async (formData) => {
@@ -59,7 +54,7 @@ const Form = ({submit, getResult}) => {
                 await timeout(3000);
                 await getResult([data[firstValid]]).then((res) => {
                     console.log(res[0]);
-                    if (res[0].status === "done") {
+                    if (res[0].status !== "pending") {
                         allDone = true;
                         first = res;
                     }
@@ -93,27 +88,7 @@ const Form = ({submit, getResult}) => {
                 <Button type={"submit"} onClick={() => setLoading(true)} variant="outlined">Submit</Button>
             </form>
             {loading && <CircularProgress/>}
-        </> : <>
-            <TableContainer sx={{maxWidth: 650}} component={Paper}>
-                <Table sx={{minWidth: 650}} aria-label="simple table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Input Sequence Text</TableCell>
-                            <TableCell align="right">Alleles</TableCell>
-                            {/*<TableCell align="right">Alleles Length</TableCell>*/}
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        <TableRow sx={{'&:last-child td, &:last-child th': {border: 0}}}>
-                            <TableCell component="th" scope="row">{formData.input_sequence_text}</TableCell>
-                            <TableCell align="right">{formData.Alleles}</TableCell>
-                            {/*<TableCell align="right">{formData.Alleles}</TableCell>*/}
-                        </TableRow>
-                    </TableBody>
-                </Table>
-            </TableContainer>
-            <div className={"mt-8"}>{submitResults?.findIndex(res => typeof res === "string") !== -1 && <CircularProgress/>}</div>
-        </>
+        </> : <Tables submitResults={submitResults} formData={formData} />
     );
 };
 
