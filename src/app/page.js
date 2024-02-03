@@ -11,295 +11,300 @@ axios.defaults.headers["Access-Control-Allow-Origin"] = "*";
 export const allPredictors = ["ann", "consensus", "netmhcpan_ba", "netmhcpan_el", "smm", "smmpmbec", "pickpocket", "netmhccons", "netmhcstabpan"];
 
 async function submit(formData) {
-  "use server"
+    "use server"
 
-  const url = "https://api-nextgen-tools.iedb.org/api/v1/pipeline"
-  const the = {
-    "pipeline_id": "",
-    "pipeline_title": "",
-    "email": "mahsasdt97@gmail.com",
-    "run_stage_range": [1, 1],
-    "stages": [{
-      "stage_display_name": "T-Cell Prediction",
-      "stage_number": 1,
-      "stage_type": "prediction",
-      "tool_group": "mhci",
-      "input_sequence_text": formData.input_sequence_text,
-      "input_parameters": {
-        "alleles": formData.Alleles,
-        "peptide_length_range": null,
-      },
-      "table_state": { "columns": {} }
-    }]
-  };
-  const allPromise = allPredictors.map((method) =>
-    axios({
-      url,
-      method: "post",
-      data: {
-        ...the,
-        stages: [{
-          ...the.stages[0],
-          input_parameters: {
-            ...the.stages[0].input_parameters,
-            predictors: [{ "type": "binding", method }]
-          }
+    const url = "https://api-nextgen-tools.iedb.org/api/v1/pipeline"
+    const the = {
+        "pipeline_id": "",
+        "pipeline_title": "",
+        "email": "mahsasdt97@gmail.com",
+        "run_stage_range": [1, 1],
+        "stages": [{
+            "stage_display_name": "T-Cell Prediction",
+            "stage_number": 1,
+            "stage_type": "prediction",
+            "tool_group": "mhci",
+            "input_sequence_text": formData.input_sequence_text,
+            "input_parameters": {
+                "alleles": formData.Alleles,
+                "peptide_length_range": null,
+                predictors: allPredictors.map((method) => ({"type": "binding", method}))
+            },
+            "table_state": {"columns": {}}
         }]
-      }
-    }).then(res => res.data.errors ? res.data : res?.data?.results_uri)
-  );
+    };
+    // const allPromise = allPredictors.map((method) =>
+    //   axios({
+    //     url,
+    //     method: "post",
+    //     data: {
+    //       ...the,
+    //       stages: [{
+    //         ...the.stages[0],
+    //         input_parameters: {
+    //           ...the.stages[0].input_parameters,
+    //           predictors: [{ "type": "binding", method }]
+    //         }
+    //       }]
+    //     }
+    //   }).then(res => res.data.errors ? res.data : res?.data?.results_uri)
+    // );
 
-  return await Promise.all(allPromise);
+    return await axios({
+        url,
+        method: "post",
+        data: the
+    }).then(res => res.data.errors ? res.data : res?.data?.results_uri);
 }
 
-const getResult = async (urlArray) => {
-  "use server"
+const getResult = async (url) => {
+    "use server"
 
-  const results = urlArray.map((result) =>
-    typeof result === "string" ? axios({
-      url: result,
-    }).then((res) => res.data) : result
-  );
+    // const results = url.map((result) =>
+    //   typeof result === "string" ? axios({
+    //     url: result,
+    //   }).then((res) => res.data) : result
+    // );
 
-  return await Promise.all(results);
+    return await axios({url}).then((res) => res.data);
 }
 
 export default function Home() {
 
-  return (
-    <main className="flex min-h-screen flex-col items-center  p-24">
-      <HlapForm submit={submit} getResult={getResult}/>
-    </main>
-  )
+    return (
+        <main className="flex min-h-screen flex-col items-center  p-24">
+            <HlapForm submit={submit} getResult={getResult}/>
+        </main>
+    )
 }
 
 const hhh = {
-  "id": "039be395-bf73-43d3-950b-d65b9900f390",
-  "type": "result",
-  "data": {
-    "results": [
-      {
-        "type": "peptide_table",
-        "table_data": [
-          [
-            1,
-            "LFGRDLSY",
-            1,
-            8,
-            8,
-            "HLA-A*01:01",
-            1,
-            16.0,
-            11064.709088124373,
-            16.0
-          ]
+    "id": "039be395-bf73-43d3-950b-d65b9900f390",
+    "type": "result",
+    "data": {
+        "results": [
+            {
+                "type": "peptide_table",
+                "table_data": [
+                    [
+                        1,
+                        "LFGRDLSY",
+                        1,
+                        8,
+                        8,
+                        "HLA-A*01:01",
+                        1,
+                        16.0,
+                        11064.709088124373,
+                        16.0
+                    ]
+                ],
+                "table_columns": [
+                    {
+                        "name": "sequence_number",
+                        "type": "int",
+                        "hidden": false,
+                        "source": "core",
+                        "sort_order": 0,
+                        "description": "Index of the input sequence among all input sequences.",
+                        "display_name": "seq #",
+                        "value_limits": {
+                            "max": 1.0,
+                            "min": 1.0
+                        },
+                        "default_order": "ascending",
+                        "row_sort_priority": 2
+                    },
+                    {
+                        "name": "peptide",
+                        "type": "text",
+                        "hidden": false,
+                        "source": "core",
+                        "sort_order": 3,
+                        "description": "Peptide sequence sequence",
+                        "display_name": "peptide",
+                        "value_limits": {
+                            "unique_values": [
+                                "LFGRDLSY"
+                            ]
+                        },
+                        "default_order": null,
+                        "row_sort_priority": null
+                    },
+                    {
+                        "name": "start",
+                        "type": "int",
+                        "hidden": false,
+                        "source": "core",
+                        "sort_order": 1,
+                        "description": "Peptide sequence start within the context of the input sequence",
+                        "display_name": "start",
+                        "value_limits": {
+                            "max": 1.0,
+                            "min": 1.0
+                        },
+                        "default_order": null,
+                        "row_sort_priority": null
+                    },
+                    {
+                        "name": "end",
+                        "type": "int",
+                        "hidden": false,
+                        "source": "core",
+                        "sort_order": 2,
+                        "description": "Peptide sequence end within the context of the input sequence",
+                        "display_name": "end",
+                        "value_limits": {
+                            "max": 8.0,
+                            "min": 8.0
+                        },
+                        "default_order": null,
+                        "row_sort_priority": null
+                    },
+                    {
+                        "name": "length",
+                        "type": "int",
+                        "hidden": false,
+                        "source": "core",
+                        "sort_order": 4,
+                        "description": "Peptide sequence length",
+                        "display_name": "peptide length",
+                        "value_limits": {
+                            "max": 8.0,
+                            "min": 8.0
+                        },
+                        "default_order": null,
+                        "row_sort_priority": null
+                    },
+                    {
+                        "name": "allele",
+                        "type": "text",
+                        "hidden": false,
+                        "source": "core",
+                        "sort_order": 5,
+                        "description": "MHC allele used in the prediction",
+                        "display_name": "allele",
+                        "value_limits": {
+                            "unique_values": [
+                                "HLA-A*01:01"
+                            ]
+                        },
+                        "default_order": null,
+                        "row_sort_priority": null
+                    },
+                    {
+                        "name": "peptide_index",
+                        "type": "int",
+                        "hidden": true,
+                        "source": "core",
+                        "sort_order": 6,
+                        "description": "Serial number of the peptide among all peptides",
+                        "display_name": "peptide index",
+                        "value_limits": {
+                            "max": 1.0,
+                            "min": 1.0
+                        },
+                        "default_order": null,
+                        "row_sort_priority": null
+                    },
+                    {
+                        "name": "median_percentile",
+                        "type": "float",
+                        "hidden": false,
+                        "source": "binding",
+                        "sort_order": 2,
+                        "description": "The median percentile rank of binding predictions",
+                        "display_name": "median binding percentile",
+                        "value_limits": {
+                            "max": 16.0,
+                            "min": 16.0
+                        },
+                        "default_order": "ascending",
+                        "number_of_digits": null,
+                        "row_sort_priority": 0
+                    },
+                    {
+                        "name": "ic50",
+                        "type": "float",
+                        "hidden": false,
+                        "source": "binding.smm",
+                        "sort_order": 1,
+                        "description": "Measured in (nM). Lower number indicates higher affinity.",
+                        "display_name": "smm IC50",
+                        "value_limits": {
+                            "max": 11064.709088124373,
+                            "min": 11064.709088124373
+                        },
+                        "default_order": "ascending",
+                        "number_of_digits": 2,
+                        "row_sort_priority": 1
+                    },
+                    {
+                        "name": "percentile",
+                        "type": "float",
+                        "hidden": false,
+                        "source": "binding.smm",
+                        "sort_order": 1,
+                        "description": "The percentile rank generated by comparing the peptide's IC50 against those of a set of random peptides from SWISSPROT database",
+                        "display_name": "smm percentile",
+                        "value_limits": {
+                            "max": 16.0,
+                            "min": 16.0
+                        },
+                        "default_order": "ascending",
+                        "number_of_digits": null,
+                        "row_sort_priority": null
+                    }
+                ]
+            },
+            {
+                "type": "input_sequence_table",
+                "table_columns": [
+                    {
+                        "name": "sequence_number",
+                        "display_name": "seq #",
+                        "type": "int",
+                        "source": "core",
+                        "sort_order": 0,
+                        "row_sort_priority": 0,
+                        "default_order": "ascending",
+                        "description": "the index of sequence",
+                        "hidden": false
+                    },
+                    {
+                        "name": "sequence_name",
+                        "display_name": "sequence name",
+                        "type": "text",
+                        "source": "core",
+                        "sort_order": 0,
+                        "row_sort_priority": null,
+                        "default_order": null,
+                        "description": "the name of sequence",
+                        "hidden": false
+                    },
+                    {
+                        "name": "sequence",
+                        "display_name": "sequence",
+                        "type": "text",
+                        "source": "core",
+                        "sort_order": 0,
+                        "row_sort_priority": null,
+                        "default_order": null,
+                        "description": "sequence",
+                        "hidden": false
+                    }
+                ],
+                "table_data": [
+                    [
+                        1,
+                        "sequence 1",
+                        "LFGRDLSY"
+                    ]
+                ]
+            }
         ],
-        "table_columns": [
-          {
-            "name": "sequence_number",
-            "type": "int",
-            "hidden": false,
-            "source": "core",
-            "sort_order": 0,
-            "description": "Index of the input sequence among all input sequences.",
-            "display_name": "seq #",
-            "value_limits": {
-              "max": 1.0,
-              "min": 1.0
-            },
-            "default_order": "ascending",
-            "row_sort_priority": 2
-          },
-          {
-            "name": "peptide",
-            "type": "text",
-            "hidden": false,
-            "source": "core",
-            "sort_order": 3,
-            "description": "Peptide sequence sequence",
-            "display_name": "peptide",
-            "value_limits": {
-              "unique_values": [
-                "LFGRDLSY"
-              ]
-            },
-            "default_order": null,
-            "row_sort_priority": null
-          },
-          {
-            "name": "start",
-            "type": "int",
-            "hidden": false,
-            "source": "core",
-            "sort_order": 1,
-            "description": "Peptide sequence start within the context of the input sequence",
-            "display_name": "start",
-            "value_limits": {
-              "max": 1.0,
-              "min": 1.0
-            },
-            "default_order": null,
-            "row_sort_priority": null
-          },
-          {
-            "name": "end",
-            "type": "int",
-            "hidden": false,
-            "source": "core",
-            "sort_order": 2,
-            "description": "Peptide sequence end within the context of the input sequence",
-            "display_name": "end",
-            "value_limits": {
-              "max": 8.0,
-              "min": 8.0
-            },
-            "default_order": null,
-            "row_sort_priority": null
-          },
-          {
-            "name": "length",
-            "type": "int",
-            "hidden": false,
-            "source": "core",
-            "sort_order": 4,
-            "description": "Peptide sequence length",
-            "display_name": "peptide length",
-            "value_limits": {
-              "max": 8.0,
-              "min": 8.0
-            },
-            "default_order": null,
-            "row_sort_priority": null
-          },
-          {
-            "name": "allele",
-            "type": "text",
-            "hidden": false,
-            "source": "core",
-            "sort_order": 5,
-            "description": "MHC allele used in the prediction",
-            "display_name": "allele",
-            "value_limits": {
-              "unique_values": [
-                "HLA-A*01:01"
-              ]
-            },
-            "default_order": null,
-            "row_sort_priority": null
-          },
-          {
-            "name": "peptide_index",
-            "type": "int",
-            "hidden": true,
-            "source": "core",
-            "sort_order": 6,
-            "description": "Serial number of the peptide among all peptides",
-            "display_name": "peptide index",
-            "value_limits": {
-              "max": 1.0,
-              "min": 1.0
-            },
-            "default_order": null,
-            "row_sort_priority": null
-          },
-          {
-            "name": "median_percentile",
-            "type": "float",
-            "hidden": false,
-            "source": "binding",
-            "sort_order": 2,
-            "description": "The median percentile rank of binding predictions",
-            "display_name": "median binding percentile",
-            "value_limits": {
-              "max": 16.0,
-              "min": 16.0
-            },
-            "default_order": "ascending",
-            "number_of_digits": null,
-            "row_sort_priority": 0
-          },
-          {
-            "name": "ic50",
-            "type": "float",
-            "hidden": false,
-            "source": "binding.smm",
-            "sort_order": 1,
-            "description": "Measured in (nM). Lower number indicates higher affinity.",
-            "display_name": "smm IC50",
-            "value_limits": {
-              "max": 11064.709088124373,
-              "min": 11064.709088124373
-            },
-            "default_order": "ascending",
-            "number_of_digits": 2,
-            "row_sort_priority": 1
-          },
-          {
-            "name": "percentile",
-            "type": "float",
-            "hidden": false,
-            "source": "binding.smm",
-            "sort_order": 1,
-            "description": "The percentile rank generated by comparing the peptide's IC50 against those of a set of random peptides from SWISSPROT database",
-            "display_name": "smm percentile",
-            "value_limits": {
-              "max": 16.0,
-              "min": 16.0
-            },
-            "default_order": "ascending",
-            "number_of_digits": null,
-            "row_sort_priority": null
-          }
-        ]
-      },
-      {
-        "type": "input_sequence_table",
-        "table_columns": [
-          {
-            "name": "sequence_number",
-            "display_name": "seq #",
-            "type": "int",
-            "source": "core",
-            "sort_order": 0,
-            "row_sort_priority": 0,
-            "default_order": "ascending",
-            "description": "the index of sequence",
-            "hidden": false
-          },
-          {
-            "name": "sequence_name",
-            "display_name": "sequence name",
-            "type": "text",
-            "source": "core",
-            "sort_order": 0,
-            "row_sort_priority": null,
-            "default_order": null,
-            "description": "the name of sequence",
-            "hidden": false
-          },
-          {
-            "name": "sequence",
-            "display_name": "sequence",
-            "type": "text",
-            "source": "core",
-            "sort_order": 0,
-            "row_sort_priority": null,
-            "default_order": null,
-            "description": "sequence",
-            "hidden": false
-          }
-        ],
-        "table_data": [
-          [
-            1,
-            "sequence 1",
-            "LFGRDLSY"
-          ]
-        ]
-      }
-    ],
-    "errors": [],
-    "warnings": []
-  },
-  "status": "done"
+        "errors": [],
+        "warnings": []
+    },
+    "status": "done"
 }

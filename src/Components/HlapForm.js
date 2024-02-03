@@ -5,7 +5,7 @@ import {
     FormControl, InputAdornment,
     TextField
 } from "@mui/material";
-import {useCallback, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {formSample, sample} from "@/Components/testing";
 import Tables from "@/Components/Tables";
 
@@ -31,42 +31,56 @@ const Form = ({submit, getResult}) => {
     const [submitResults, setSubmitResults] = useState([]);
     const [formData, setFormData] = useState({});
     const [loading, setLoading] = useState(false);
+    console.log(formData);
 
-    const action = useCallback(async (formData) => {
+    useEffect(() => {
+        if (Object.keys(formData).length) {
+            async function fetchMyAPI() {
+                const resultUrl = await submit(formData);
+                console.log(resultUrl);
+
+                let done = false;
+                while (!done) {
+                    console.log("alive");
+                    await timeout(3000);
+                    await getResult(resultUrl).then((res) => {
+                        console.log(res);
+                        console.log("alive again");
+                        if (res.status !== "pending") {
+                            done = true;
+                            // setSubmitResults(res);
+                        }
+                    });
+                }
+            }
+
+            fetchMyAPI()
+        }
+    }, [formData]);
+
+    const action = useCallback((formData) => {
         const form = {};
         inputs.forEach((input) => {
             form[input] = formData.get(input);
         });
         form.Alleles = "HLA-A*" + form.Alleles;
-        console.log(form)
         setFormData(form);
+        setLoading(true);
 
-        const data = await submit(form);
-        setSubmitResults(data);
-        console.log(data);
 
-        let allDone = false;
-        const firstValid = data.findIndex((result) => typeof result === "string");
-        if (firstValid !== -1) {
-            let first = null;
-            while (!allDone) {
-                console.log("alive")
-                await timeout(3000);
-                await getResult([data[firstValid]]).then((res) => {
-                    console.log(res[0]);
-                    if (res[0].status !== "pending") {
-                        allDone = true;
-                        first = res;
-                    }
-                    console.log("alive again")
-                });
-            }
-            getResult(data).then((response) => {
-                console.log(response);
-                setSubmitResults(response);
-            });
-        }
-    }, [getResult, submit]);
+        // setSubmitResults(data);
+        // console.log(data);
+        //
+        // let allDone = false;
+        // const firstValid = data.findIndex((result) => typeof result === "string");
+        // if (firstValid !== -1) {
+
+        //     getResult(data).then((response) => {
+        //         console.log(response);
+        //         setSubmitResults(response);
+        //     });
+        // }
+    }, []);
 
     return (submitResults.length === 0 ? <>
             <form action={action}>
@@ -85,10 +99,10 @@ const Form = ({submit, getResult}) => {
                            }}
                 />
 
-                <Button type={"submit"} onClick={() => setLoading(true)} variant="outlined">Submit</Button>
+                <Button type={"submit"} variant="outlined">Submit</Button>
             </form>
             {loading && <CircularProgress/>}
-        </> : <Tables submitResults={submitResults} formData={formData} />
+        </> : <Tables submitResults={submitResults} formData={formData}/>
     );
 };
 
