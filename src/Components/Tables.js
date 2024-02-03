@@ -30,24 +30,21 @@ const Tables = ({submitResults, formData}) => {
         <div className={"max-w-[850px]"}>
             {submitResults.map((result, index) => {
                 if (result?.errors?.length) {
-                    return (<>
-                        <div className={"my-8"}>
-                            <b>{allPredictors[index]}:</b> {result?.errors[0]}</div>
-                        {/*<div>{result?.errors[1]}</div>*/}
-                    </>);
+                    return (<div key={allPredictors[index]} className={"my-8"}>
+                        <b>{allPredictors[index]}:</b> {result?.errors[0]}
+                    </div>);
                 } else if (typeof result !== "string") {
                     if (result?.status === "error") {
-                        return (<>
-                            <div className={"my-8"}>
-                                <b>{allPredictors[index]}:</b> {result?.data?.errors[0]}</div>
-                        </>)
-                    } else {
-                        return <TableMaker result={result?.data?.results[0]} index={index}/>;
+                        return (<div key={allPredictors[index]} className={"my-8"}>
+                            <b>{allPredictors[index]}:</b> {result?.data?.errors[0]}
+                        </div>);
+                    } else if (result?.status === "done") {
+                        return <TableMaker key={allPredictors[index]} result={result?.data?.results[0]} index={index}/>;
                     }
                 }
             })}
         </div>
-    </>);
+    </>)
 }
 
 export default Tables;
@@ -75,7 +72,8 @@ const TableMaker = ({result, index}) => {
                             <TableRow key={dataIndex} sx={{'&:last-child td, &:last-child th': {border: 0}}}>
                                 {predictionTables[index].map((i, cellIndex) => {
                                     const style = cellIndex === 0 ? {component: "th", scope: "row"} : {align: "left"};
-                                    return (<TableCell {...style}>{dataArray[i]}</TableCell>)
+                                    return (<TableCell
+                                        key={result?.table_columns[i].display_name} {...style}>{dataArray[i]}</TableCell>)
                                 })}
                             </TableRow>
                         )}

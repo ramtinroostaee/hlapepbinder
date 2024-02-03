@@ -5,7 +5,7 @@ export const formSample = {
 
 export const sample = [
     {
-        "id": "95019617-ea31-4fc5-b527-aab638f8961f",
+        "id": "169917a7-3dd1-4438-8c7f-fb3e16ade87d",
         "type": "result",
         "data": {
             "results": [
@@ -235,7 +235,7 @@ export const sample = [
         "status": "done"
     },
     {
-        "id": "4bc2bda6-a00f-4a36-a1db-df74bf5e9b77",
+        "id": "472f730a-7172-44e5-8629-d942e74bac0a",
         "type": "result",
         "data": {
             "results": [
@@ -516,7 +516,7 @@ export const sample = [
         "status": "done"
     },
     {
-        "id": "dc329035-ee88-4fb8-81cd-86cb957ec88c",
+        "id": "ba01be92-b1dd-4348-b46d-a2d88830ffcf",
         "type": "result",
         "data": {
             "results": [
@@ -839,7 +839,7 @@ export const sample = [
         "status": "done"
     },
     {
-        "id": "20bb656e-4115-4e64-a348-505a87298689",
+        "id": "e5f660be-8da1-4f4c-b4d5-0d05afce5d58",
         "type": "result",
         "data": {
             "results": [
@@ -1162,7 +1162,7 @@ export const sample = [
         "status": "done"
     },
     {
-        "id": "67e15782-2ac3-4cb9-8c9d-b516627a71ed",
+        "id": "d2e38f6f-bac3-447e-a861-3efb3e180a2d",
         "type": "result",
         "data": {
             "results": [
@@ -1392,7 +1392,7 @@ export const sample = [
         "status": "done"
     },
     {
-        "id": "24ae8050-9105-4a66-b0af-dd96e82cf64f",
+        "id": "fbf9cc8b-cc88-4402-9d2c-4bd2988aceb2",
         "type": "result",
         "data": {
             "results": [
@@ -1622,16 +1622,16 @@ export const sample = [
         "status": "done"
     },
     {
-        "id": "fa5dab4d-2328-4bb8-a67e-159fbcd275b5",
+        "id": "4f5294ee-01af-40c5-9f5c-2ad313b33a3a",
         "type": "result",
         "data": {
             "errors": [
-                "The following errors occurred during processing.  If these issues persist, please contact help@iedb.org for assistance and include stage reference number 81bcf3b2-79a0-4a52-9831-f611000ebfa1",
-                "Runtime error: Completion flag file missing for job 0: /scratch/stages/tmpqyl55e2c/0.complete",
-                "Expected output missing for job id 0: /scratch/stages/tmpqyl55e2c/results/0.json",
-                "Runtime error: Completion flag file missing for job 1: /scratch/stages/tmpqyl55e2c/1.complete",
-                "Expected output missing for job id 1: /scratch/stages/tmpqyl55e2c/aggregate/aggregated_result.json",
-                "[Errno 2] No such file or directory: '/scratch/stages/tmpqyl55e2c/aggregate/aggregated_result.json'",
+                "The following errors occurred during processing.  If these issues persist, please contact help@iedb.org for assistance and include stage reference number 07484d37-9a75-418e-a0cb-fa04f3e5efde",
+                "Runtime error: Completion flag file missing for job 0: /scratch/stages/tmpzmpu19e4/0.complete",
+                "Expected output missing for job id 0: /scratch/stages/tmpzmpu19e4/results/0.json",
+                "Runtime error: Completion flag file missing for job 1: /scratch/stages/tmpzmpu19e4/1.complete",
+                "Expected output missing for job id 1: /scratch/stages/tmpzmpu19e4/aggregate/aggregated_result.json",
+                "[Errno 2] No such file or directory: '/scratch/stages/tmpzmpu19e4/aggregate/aggregated_result.json'",
                 "Key error converting cmd results to API: 'results' not found"
             ],
             "warnings": []

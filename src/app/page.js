@@ -2,10 +2,6 @@ import axios from "axios";
 import HlapForm from "@/Components/HlapForm";
 
 axios.defaults.headers.common["Content-Type"] = 'application/json';
-axios.defaults.headers.common["Accept"] = "application/json";
-axios.defaults.headers.withCredentials = false;
-axios.defaults.headers["Access-Control-Allow-Credentials"] = true;
-axios.defaults.headers["Access-Control-Allow-Origin"] = "*";
 // axios.defaults.baseURL = "https://api-nextgen-tools.iedb.org/";
 
 export const allPredictors = ["ann", "consensus", "netmhcpan_ba", "netmhcpan_el", "smm", "smmpmbec", "pickpocket", "netmhccons", "netmhcstabpan"];
@@ -27,7 +23,7 @@ async function submit(formData) {
       "input_sequence_text": formData.input_sequence_text,
       "input_parameters": {
         "alleles": formData.Alleles,
-        "peptide_length_range": null,
+        "peptide_length_range": [8,8],
       },
       "table_state": { "columns": {} }
     }]

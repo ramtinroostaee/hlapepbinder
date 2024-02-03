@@ -5,7 +5,7 @@ import {
     FormControl, InputAdornment,
     TextField
 } from "@mui/material";
-import {useCallback, useState} from "react";
+import {useCallback, useEffect, useMemo, useState} from "react";
 import {formSample, sample} from "@/Components/testing";
 import Tables from "@/Components/Tables";
 
@@ -32,41 +32,75 @@ const Form = ({submit, getResult}) => {
     const [formData, setFormData] = useState({});
     const [loading, setLoading] = useState(false);
 
+    const isSubmitted = useMemo(() => Object.keys(formData).length > 0)
+
+    useEffect(() => {
+        if (isSubmitted) {
+            async function fetchMyAPI() {
+                const data = await submit(formData);
+                setSubmitResults(data);
+                console.log(data);
+            }
+
+            fetchMyAPI()
+        }
+    }, [formData]);
+
+    useEffect(() => {
+        if (submitResults.length) {
+            let undoneIndex = -1;
+            let anyoneDone = false;
+            submitResults.forEach((result, index) => {
+                if (typeof result === "string" || result?.status === "pending") {
+                    undoneIndex = index;
+                } else if (result?.status === "done") {
+                    anyoneDone = true;
+                }
+            });
+
+            if (undoneIndex !== -1) {
+                if (anyoneDone) {
+                    async function fetchAll() {
+                        await getResult(submitResults?.map((res) =>
+                            res?.status === "pending" ? `https://api-nextgen-tools.iedb.org/api/v1/results/${res.id}` : res
+                        )).then((response) => {
+                            console.log(response);
+                            setSubmitResults(response);
+                        });
+                    }
+
+                    fetchAll();
+                } else {
+                    async function fetchOne() {
+                        let first = null;
+                        console.log("alive");
+                        await timeout(3000);
+                        await getResult([submitResults[undoneIndex]]).then((res) => {
+                            console.log(res[0]);
+                            setSubmitResults((pre) => {
+                                const the = [...pre];
+                                the[undoneIndex] = res[0];
+                                return the;
+                            });
+                        });
+                    }
+
+                    fetchOne();
+                }
+            }
+        }
+    }, [submitResults]);
+
     const action = useCallback(async (formData) => {
         const form = {};
         inputs.forEach((input) => {
             form[input] = formData.get(input);
         });
         form.Alleles = "HLA-A*" + form.Alleles;
-        console.log(form)
+        console.log(form);
         setFormData(form);
-
-        const data = await submit(form);
-        setSubmitResults(data);
-        console.log(data);
-
-        let allDone = false;
-        const firstValid = data.findIndex((result) => typeof result === "string");
-        if (firstValid !== -1) {
-            let first = null;
-            while (!allDone) {
-                console.log("alive")
-                await timeout(3000);
-                await getResult([data[firstValid]]).then((res) => {
-                    console.log(res[0]);
-                    if (res[0].status !== "pending") {
-                        allDone = true;
-                        first = res;
-                    }
-                    console.log("alive again")
-                });
-            }
-            getResult(data).then((response) => {
-                console.log(response);
-                setSubmitResults(response);
-            });
-        }
-    }, [getResult, submit]);
+        setLoading(true);
+    }, []);
 
     return (submitResults.length === 0 ? <>
             <form action={action}>
@@ -74,7 +108,7 @@ const Form = ({submit, getResult}) => {
                     or as whitespace-separated sequences.
                 </p>
                 <FormControl className={"my-10"} fullWidth>
-                    <TextField name="input_sequence_text" label="sequence" variant="outlined"/>
+                    <TextField multiline name="input_sequence_text" label="sequence" variant="outlined"/>
                 </FormControl>
                 <TextField fullWidth className={"mb-10"}
                            label="Alleles"
@@ -84,11 +118,10 @@ const Form = ({submit, getResult}) => {
                                startAdornment: <InputAdornment position="start">HLA-A*</InputAdornment>,
                            }}
                 />
-
-                <Button type={"submit"} onClick={() => setLoading(true)} variant="outlined">Submit</Button>
+                <Button disabled={isSubmitted} type={"submit"} variant="outlined">Submit</Button>
             </form>
             {loading && <CircularProgress/>}
-        </> : <Tables submitResults={submitResults} formData={formData} />
+        </> : <Tables submitResults={submitResults} formData={formData}/>
     );
 };
 
