@@ -26,16 +26,17 @@ export function timeout(ms) {
 }
 
 const inputs = ["input_sequence_text", "Alleles"];
+let count = 0;
 
-const Form = ({submit, getResult}) => {
-    const [submitResults, setSubmitResults] = useState([]);
-    const [formData, setFormData] = useState({});
+const Form = ({submit, getResult, getModelResult}) => {
+    const [submitResults, setSubmitResults] = useState(sample);
+    const [formData, setFormData] = useState(formSample);
     const [loading, setLoading] = useState(false);
 
     const isSubmitted = useMemo(() => Object.keys(formData).length > 0)
 
     useEffect(() => {
-        if (isSubmitted) {
+        if (isSubmitted && submitResults.length <= 0) {
             async function fetchMyAPI() {
                 const data = await submit(formData);
                 setSubmitResults(data);
@@ -44,7 +45,7 @@ const Form = ({submit, getResult}) => {
 
             fetchMyAPI()
         }
-    }, [formData]);
+    }, [formData, isSubmitted]);
 
     useEffect(() => {
         if (submitResults.length) {
@@ -72,11 +73,11 @@ const Form = ({submit, getResult}) => {
                     fetchAll();
                 } else {
                     async function fetchOne() {
-                        let first = null;
                         console.log("alive");
                         await timeout(3000);
                         await getResult([submitResults[undoneIndex]]).then((res) => {
                             console.log(res[0]);
+                            console.log(count++);
                             setSubmitResults((pre) => {
                                 const the = [...pre];
                                 the[undoneIndex] = res[0];
@@ -121,40 +122,8 @@ const Form = ({submit, getResult}) => {
                 <Button disabled={isSubmitted} type={"submit"} variant="outlined">Submit</Button>
             </form>
             {loading && <CircularProgress/>}
-        </> : <Tables submitResults={submitResults} formData={formData}/>
+        </> : <Tables submitResults={submitResults} formData={formData} getModelResult={getModelResult} />
     );
 };
 
 export default Form;
-
-
-{/*<FormControl fullWidth>*/
-}
-{/*    <InputLabel id="demo-simple-select-label">Age</InputLabel>*/
-}
-{/*    <Select*/
-}
-{/*        labelId="demo-simple-select-label"*/
-}
-{/*        id="demo-simple-select"*/
-}
-{/*        value={species}*/
-}
-{/*        label="Age"*/
-}
-{/*        onChange={(select) => {*/
-}
-{/*            setSpecies(select.target.value.toString())*/
-}
-{/*        }}*/
-}
-{/*    >*/
-}
-{/*        {sourceSpecies.map((source) => <MenuItem key={source.value} name={source.text}*/
-}
-{/*                                                 value={source.value}>{source.text}</MenuItem>)}*/
-}
-{/*    </Select>*/
-}
-{/*</FormControl>*/
-}
