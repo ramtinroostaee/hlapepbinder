@@ -65,7 +65,7 @@ const getResult = async (urlArray) => {
 const getModelResult = async (requestBody) => {
     "use server"
 
-    const data = await axios({data: requestBody, url: "http://127.0.0.1:8000/hlap", method: "post"});
+    const data = await axios({data: requestBody, url: "http://5.34.201.187:4856/hlap", method: "post"});
     return data?.data;
 }
 
