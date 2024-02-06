@@ -43,7 +43,9 @@ const Form = ({ submit, getResult, getModelResult }) => {
       let anyoneDone = false;
       submitResults.forEach((result, index) => {
         if (typeof result === "string" || result?.status === "pending") {
-          undoneIndex = index;
+          if (undoneIndex === -1) {
+            undoneIndex = index;
+          }
         } else if (result?.status === "done") {
           anyoneDone = true;
         }
@@ -99,19 +101,20 @@ const Form = ({ submit, getResult, getModelResult }) => {
         <p>Enter protein sequence(s) in FASTA format
           or as whitespace-separated sequences.
         </p>
-        <TextField sx={{margin: "24px 0"}} fullWidth multiline name="input_sequence_text" label="sequence" variant="outlined"/>
+        <TextField sx={{ margin: "24px 0" }} fullWidth multiline name="input_sequence_text" label="sequence"
+                   variant="outlined"/>
         <div className={"flex justify-center"}>
           <TextField className={"mb-10"}
                      label="Alleles"
                      name="Alleles"
                      variant={"outlined"}
                      fullWidth
-                     sx={{marginRight: "10px"}}
+                     sx={{ marginRight: "10px" }}
                      InputProps={{
                        startAdornment: <InputAdornment position="start">HLA-</InputAdornment>,
                      }}
           />
-          <FormControl fullWidth sx={{marginLeft: "10px"}}>
+          <FormControl fullWidth sx={{ marginLeft: "10px" }}>
             <InputLabel>Length</InputLabel>
             <Select
               id="demo-simple-select"
@@ -124,7 +127,7 @@ const Form = ({ submit, getResult, getModelResult }) => {
             </Select>
           </FormControl>
         </div>
-        <Button sx={{margin: "24px 0"}} disabled={isSubmitted} type={"submit"} variant="outlined">Submit</Button>
+        <Button sx={{ margin: "24px 0" }} disabled={isSubmitted} type={"submit"} variant="outlined">Submit</Button>
       </form>
       {loading && <CircularProgress/>}
     </> : <Tables submitResults={submitResults} formData={formData} getModelResult={getModelResult}/>
