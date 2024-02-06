@@ -95,25 +95,24 @@ const Form = ({ submit, getResult, getModelResult }) => {
   }, []);
 
   return (submitResults.length === 0 ? <>
-      <form action={action}>
+      <form action={action} className={"flex flex-col justify-center"}>
         <p>Enter protein sequence(s) in FASTA format
           or as whitespace-separated sequences.
         </p>
-        <FormControl className={"my-10"} fullWidth>
-          <TextField multiline name="input_sequence_text" label="sequence" variant="outlined"/>
-        </FormControl>
+        <TextField sx={{margin: "24px 0"}} fullWidth multiline name="input_sequence_text" label="sequence" variant="outlined"/>
         <div className={"flex justify-center"}>
           <TextField className={"mb-10"}
                      label="Alleles"
                      name="Alleles"
                      variant={"outlined"}
                      fullWidth
+                     sx={{marginRight: "10px"}}
                      InputProps={{
                        startAdornment: <InputAdornment position="start">HLA-</InputAdornment>,
                      }}
           />
-          <FormControl fullWidth>
-            <InputLabel>Age</InputLabel>
+          <FormControl fullWidth sx={{marginLeft: "10px"}}>
+            <InputLabel>Length</InputLabel>
             <Select
               id="demo-simple-select"
               defaultValue={lengths[0]}
@@ -125,7 +124,7 @@ const Form = ({ submit, getResult, getModelResult }) => {
             </Select>
           </FormControl>
         </div>
-        <Button disabled={isSubmitted} type={"submit"} variant="outlined">Submit</Button>
+        <Button sx={{margin: "24px 0"}} disabled={isSubmitted} type={"submit"} variant="outlined">Submit</Button>
       </form>
       {loading && <CircularProgress/>}
     </> : <Tables submitResults={submitResults} formData={formData} getModelResult={getModelResult}/>
