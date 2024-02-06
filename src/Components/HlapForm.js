@@ -1,129 +1,135 @@
 "use client"
 
 import {
-    Button, CircularProgress,
-    FormControl, InputAdornment,
-    TextField
+  Button, CircularProgress,
+  FormControl, InputAdornment, InputLabel, MenuItem, Select,
+  TextField
 } from "@mui/material";
-import {useCallback, useEffect, useMemo, useState} from "react";
-import {formSample, sample} from "@/Components/testing";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { formSample, sample } from "@/Components/testing";
 import Tables from "@/Components/Tables";
 
-const sourceSpecies = [
-    {text: "chimpanzee", value: "chimpanzee"},
-    {text: "cow", value: "cow"},
-    {text: "gorilla", value: "gorilla"},
-    {text: "human", value: "human"},
-    {text: "macaque", value: "macaque"},
-    {text: "mouse", value: "mouse"},
-    {text: "pig", value: "pig"},
-    {text: "dog", value: "dog"},
-    {text: "horse", value: "horse"},
-]
+const lengths = [8, 9, 10, 11, 12, 13, 14];
 
 export function timeout(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-const inputs = ["input_sequence_text", "Alleles"];
+const inputs = ["input_sequence_text", "Alleles", "length"];
 let count = 0;
 
-const Form = ({submit, getResult, getModelResult}) => {
-    const [submitResults, setSubmitResults] = useState(sample);
-    const [formData, setFormData] = useState(formSample);
-    const [loading, setLoading] = useState(false);
+const Form = ({ submit, getResult, getModelResult }) => {
+  const [submitResults, setSubmitResults] = useState([]);
+  const [formData, setFormData] = useState({});
+  const [loading, setLoading] = useState(false);
 
-    const isSubmitted = useMemo(() => Object.keys(formData).length > 0)
+  const isSubmitted = useMemo(() => Object.keys(formData).length > 0, [formData]);
 
-    useEffect(() => {
-        if (isSubmitted && submitResults.length <= 0) {
-            async function fetchMyAPI() {
-                const data = await submit(formData);
-                setSubmitResults(data);
-                console.log(data);
-            }
+  useEffect(() => {
+    if (isSubmitted && submitResults.length <= 0) {
+      async function fetchMyAPI() {
+        const data = await submit(formData);
+        setSubmitResults(data);
+        console.log(data);
+      }
 
-            fetchMyAPI()
+      fetchMyAPI()
+    }
+  }, [formData, isSubmitted]);
+
+  useEffect(() => {
+    if (submitResults.length) {
+      let undoneIndex = -1;
+      let anyoneDone = false;
+      submitResults.forEach((result, index) => {
+        if (typeof result === "string" || result?.status === "pending") {
+          undoneIndex = index;
+        } else if (result?.status === "done") {
+          anyoneDone = true;
         }
-    }, [formData, isSubmitted]);
+      });
 
-    useEffect(() => {
-        if (submitResults.length) {
-            let undoneIndex = -1;
-            let anyoneDone = false;
-            submitResults.forEach((result, index) => {
-                if (typeof result === "string" || result?.status === "pending") {
-                    undoneIndex = index;
-                } else if (result?.status === "done") {
-                    anyoneDone = true;
-                }
+      if (undoneIndex !== -1) {
+        if (anyoneDone) {
+          async function fetchAll() {
+            await getResult(submitResults?.map((res) =>
+              res?.status === "pending" ? `https://api-nextgen-tools.iedb.org/api/v1/results/${res.id}` : res
+            )).then((response) => {
+              console.log(response);
+              setSubmitResults(response);
             });
+          }
 
-            if (undoneIndex !== -1) {
-                if (anyoneDone) {
-                    async function fetchAll() {
-                        await getResult(submitResults?.map((res) =>
-                            res?.status === "pending" ? `https://api-nextgen-tools.iedb.org/api/v1/results/${res.id}` : res
-                        )).then((response) => {
-                            console.log(response);
-                            setSubmitResults(response);
-                        });
-                    }
+          fetchAll();
+        } else {
+          async function fetchOne() {
+            console.log("alive");
+            await timeout(3000);
+            const that = submitResults[undoneIndex];
+            await getResult([that?.status === "pending" ? `https://api-nextgen-tools.iedb.org/api/v1/results/${that.id}` : that]).then((res) => {
+              console.log(res[0]);
+              console.log(count++);
+              setSubmitResults((pre) => {
+                const the = [...pre];
+                the[undoneIndex] = res[0];
+                return the;
+              });
+            });
+          }
 
-                    fetchAll();
-                } else {
-                    async function fetchOne() {
-                        console.log("alive");
-                        await timeout(3000);
-                        await getResult([submitResults[undoneIndex]]).then((res) => {
-                            console.log(res[0]);
-                            console.log(count++);
-                            setSubmitResults((pre) => {
-                                const the = [...pre];
-                                the[undoneIndex] = res[0];
-                                return the;
-                            });
-                        });
-                    }
-
-                    fetchOne();
-                }
-            }
+          fetchOne();
         }
-    }, [submitResults]);
+      }
+    }
+  }, [submitResults]);
 
-    const action = useCallback(async (formData) => {
-        const form = {};
-        inputs.forEach((input) => {
-            form[input] = formData.get(input);
-        });
-        form.Alleles = "HLA-A*" + form.Alleles;
-        console.log(form);
-        setFormData(form);
-        setLoading(true);
-    }, []);
+  const action = useCallback(async (formData) => {
+    const form = {};
+    inputs.forEach((input) => {
+      form[input] = formData.get(input);
+    });
+    form.Alleles = "HLA-" + form.Alleles;
+    console.log(form);
+    setFormData(form);
+    setLoading(true);
+  }, []);
 
-    return (submitResults.length === 0 ? <>
-            <form action={action}>
-                <p>Enter protein sequence(s) in FASTA format
-                    or as whitespace-separated sequences.
-                </p>
-                <FormControl className={"my-10"} fullWidth>
-                    <TextField multiline name="input_sequence_text" label="sequence" variant="outlined"/>
-                </FormControl>
-                <TextField fullWidth className={"mb-10"}
-                           label="Alleles"
-                           name="Alleles"
-                           variant={"outlined"}
-                           InputProps={{
-                               startAdornment: <InputAdornment position="start">HLA-A*</InputAdornment>,
-                           }}
-                />
-                <Button disabled={isSubmitted} type={"submit"} variant="outlined">Submit</Button>
-            </form>
-            {loading && <CircularProgress/>}
-        </> : <Tables submitResults={submitResults} formData={formData} getModelResult={getModelResult} />
-    );
+  return (submitResults.length === 0 ? <>
+      <form action={action}>
+        <p>Enter protein sequence(s) in FASTA format
+          or as whitespace-separated sequences.
+        </p>
+        <FormControl className={"my-10"} fullWidth>
+          <TextField multiline name="input_sequence_text" label="sequence" variant="outlined"/>
+        </FormControl>
+        <div className={"flex justify-center"}>
+          <TextField className={"mb-10"}
+                     label="Alleles"
+                     name="Alleles"
+                     variant={"outlined"}
+                     fullWidth
+                     InputProps={{
+                       startAdornment: <InputAdornment position="start">HLA-</InputAdornment>,
+                     }}
+          />
+          <FormControl fullWidth>
+            <InputLabel>Age</InputLabel>
+            <Select
+              id="demo-simple-select"
+              defaultValue={lengths[0]}
+              label="length"
+              name={"length"}
+            >
+              {lengths.map((source) =>
+                <MenuItem key={source} value={source}>{source}</MenuItem>)}
+            </Select>
+          </FormControl>
+        </div>
+        <Button disabled={isSubmitted} type={"submit"} variant="outlined">Submit</Button>
+      </form>
+      {loading && <CircularProgress/>}
+    </> : <Tables submitResults={submitResults} formData={formData} getModelResult={getModelResult}/>
+  );
 };
 
 export default Form;

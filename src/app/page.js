@@ -9,7 +9,9 @@ export const allPredictors = ["ann", "consensus", "netmhcpan_ba", "netmhcpan_el"
 async function submit(formData) {
     "use server"
 
-    const url = "https://api-nextgen-tools.iedb.org/api/v1/pipeline"
+    const url = "https://api-nextgen-tools.iedb.org/api/v1/pipeline";
+    const range = Number(formData.length);
+    const peptide_length_range = [range, range];
     const the = {
         "pipeline_id": "",
         "pipeline_title": "",
@@ -23,7 +25,7 @@ async function submit(formData) {
             "input_sequence_text": formData.input_sequence_text,
             "input_parameters": {
                 "alleles": formData.Alleles,
-                "peptide_length_range": [8, 8],
+                peptide_length_range,
             },
             "table_state": {"columns": {}}
         }]
@@ -63,7 +65,7 @@ const getResult = async (urlArray) => {
 const getModelResult = async (requestBody) => {
     "use server"
 
-    const data = await axios({data: {input: requestBody}, url: "http://127.0.0.1:8000/hlap", method: "post"});
+    const data = await axios({data: requestBody, url: "http://127.0.0.1:8000/hlap", method: "post"});
     return data?.data;
 }
 
